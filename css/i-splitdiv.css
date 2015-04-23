@@ -30,3 +30,108 @@ i-splitdiv:not(.itag-rendered) * {
 }
 /* ================================= */
 
+i-splitdiv {
+    margin: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+
+    /* the next css comes from purecss: the class `.pure-g`: */
+    letter-spacing: -0.31em; /* Webkit: collapse white-space between units */
+    *letter-spacing: normal; /* reset IE < 8 */
+    word-spacing: -0.43em; /* collapse white-space between units */
+    text-rendering: optimizespeed; /* Webkit: fixes text-rendering: optimizeLegibility */
+    /*
+    Resets the font family back to the OS/browser's default sans-serif font,
+    this the same font stack that Normalize.css sets for the `body`.
+    */
+    font-family: sans-serif;
+    /*
+    Use flexbox when possible to avoid `letter-spacing` side-effects.
+    NOTE: Firefox (as of 25) does not currently support flex-wrap, so the
+    `-moz-` prefix version is omitted.
+    */
+    display: -webkit-flex;
+    -webkit-flex-flow: row wrap;
+    /* IE10 uses display: flexbox */
+    display: -ms-flexbox;
+    -ms-flex-flow: row wrap;
+}
+
+i-splitdiv >span {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+i-splitdiv >span >span {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    letter-spacing: normal;
+    word-spacing: normal;
+    vertical-align: top;
+    text-rendering: auto;
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative;
+    z-index: 2;
+    overflow: hidden; /* needed to make decrease to low values posible when section has padding */
+}
+
+i-splitdiv.itag-rendered:not(.i-resizing) >span >span:not(.hidden-copy) {
+    -moz-transition: width 2s, margin-left 2s, padding-left 2s, height 2s, margin-top 2s, padding-top 2s;
+    -o-transition: width 2s, margin-left 2s, padding-left 2s, height 2s, margin-top 2s, padding-top 2s;
+    -webkit-transition: width 2s, margin-left 2s, padding-left 2s, height 2s, margin-top 2s, padding-top 2s;
+    transition: width 2s, margin-left 2s, padding-left 2s, height 2s, margin-top 2s, padding-top 2s;
+}
+
+i-splitdiv >span >span.hidden-copy {
+    position: absolute !important;
+    z-index: -1 !important;
+    opacity: 0 !important;
+}
+
+i-splitdiv >span >span >section{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    overflow: scroll;
+}
+
+i-splitdiv >span >span:last-child {
+    z-index: 1;
+}
+
+i-splitdiv[horizontal="true"] >span >span {
+    display: inline-block;
+}
+
+i-splitdiv .resize-handle {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    z-index: 3;
+    width: 100%;
+    height: 16px;
+}
+
+i-splitdiv.i-resizing,
+i-splitdiv .resize-handle[plugin-dd="true"]:hover {
+    cursor: row-resize;
+}
+
+i-splitdiv[horizontal="true"].i-resizing,
+i-splitdiv[horizontal="true"] .resize-handle[plugin-dd="true"]:hover {
+    cursor: col-resize;
+}
+
+i-splitdiv[horizontal="true"] .resize-handle {
+    width: 16px;
+    height: 100%;
+}
