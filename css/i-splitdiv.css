@@ -58,14 +58,14 @@ i-splitdiv {
     -ms-flex-flow: row wrap;
 }
 
-i-splitdiv >span {
+i-splitdiv >div {
     position: relative;
     overflow: hidden;
     width: 100%;
     height: 100%;
 }
 
-i-splitdiv >span >span {
+i-splitdiv >div >div {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -81,20 +81,20 @@ i-splitdiv >span >span {
     overflow: hidden; /* needed to make decrease to low values posible when section has padding */
 }
 
-i-splitdiv.itag-rendered:not(.i-resizing) >span >span:not(.hidden-copy) {
-    -moz-transition: width 2s, margin-left 2s, padding-left 2s, height 2s, margin-top 2s, padding-top 2s;
-    -o-transition: width 2s, margin-left 2s, padding-left 2s, height 2s, margin-top 2s, padding-top 2s;
-    -webkit-transition: width 2s, margin-left 2s, padding-left 2s, height 2s, margin-top 2s, padding-top 2s;
-    transition: width 2s, margin-left 2s, padding-left 2s, height 2s, margin-top 2s, padding-top 2s;
+i-splitdiv.itag-rendered:not(.i-resizing) >div >div:not(.suppress-trans) {
+    -moz-transition: width 0.5s, margin-left 0.5s, padding-left 0.5s, height 0.5s, margin-top 0.5s, padding-top 0.5s;
+    -o-transition: width 0.5s, margin-left 0.5s, padding-left 0.5s, height 0.5s, margin-top 0.5s, padding-top 0.5s;
+    -webkit-transition: width 0.5s, margin-left 0.5s, padding-left 0.5s, height 0.5s, margin-top 0.5s, padding-top 0.5s;
+    transition: width 0.5s, margin-left 0.5s, padding-left 0.5s, height 0.5s, margin-top 0.5s, padding-top 0.5s;
 }
 
-i-splitdiv >span >span.hidden-copy {
+i-splitdiv >div >div.hidden-copy {
     position: absolute !important;
     z-index: -1 !important;
     opacity: 0 !important;
 }
 
-i-splitdiv >span >span >section{
+i-splitdiv >div >div >section {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -103,11 +103,11 @@ i-splitdiv >span >span >section{
     overflow: scroll;
 }
 
-i-splitdiv >span >span:last-child {
+i-splitdiv >div >div:last-child {
     z-index: 1;
 }
 
-i-splitdiv[horizontal="true"] >span >span {
+i-splitdiv[horizontal="true"] >div >div {
     display: inline-block;
 }
 
@@ -116,9 +116,13 @@ i-splitdiv .resize-handle {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     position: absolute;
-    z-index: 3;
+    z-index: -1;
     width: 100%;
     height: 16px;
+}
+
+i-splitdiv .resize-handle[plugin-dd="true"] {
+    z-index: 3;
 }
 
 i-splitdiv.i-resizing,

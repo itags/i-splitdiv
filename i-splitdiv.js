@@ -76,20 +76,20 @@ module.exports = function (window) {
                 var element = this,
                     designNode = element.getItagContainer(),
                     sections = designNode.getAll('>section'),
-                    container = element.append('<span></span>'),
+                    container = element.append('<div></div>'),
                     nodeContent;
                 if (sections[0]) {
                     sections[0].setAttr('section', 'first', true);
                     nodeContent = sections[0].getOuterHTML(null, true);
-                    element.setData('_section1', container.append('<span>'+nodeContent+'</span>'));
-                    element.setData('_section1HiddenCopy', container.addSystemElement('<span class="hidden-copy">'+nodeContent+'</span>'));
+                    element.setData('_section1', container.append('<div>'+nodeContent+'</div>'));
+                    element.setData('_section1HiddenCopy', container.addSystemElement('<div class="hidden-copy suppress-trans">'+nodeContent+'</div>'));
                 }
                 if (sections[1]) {
                     sections[1].setAttr('section', 'second', true);
-                    element.setData('_section2', container.append('<span>'+sections[1].getOuterHTML(null, true)+'</span>'));
+                    element.setData('_section2', container.append('<div>'+sections[1].getOuterHTML(null, true)+'</div>'));
                 }
                  // add the divider, but not silently --> we need to enable the dd-plugin to render:
-                element.setData('_divider', container.addSystemElement('<span class="resize-handle" plugin-constrain="true" constrain-selector="i-splitdiv"></span>', false, false));
+                element.setData('_divider', container.addSystemElement('<div class="resize-handle" plugin-constrain="true" constrain-selector="i-splitdiv"></div>', false, false));
             },
 
             sync: function() {
@@ -133,7 +133,6 @@ module.exports = function (window) {
                         section1.removeInlineStyle('max-'+size);
                         section1HiddenCopy.removeInlineStyle('max-'+size);
                     }
-                    section1.setInlineStyle(size, model.divider);
                     section1.removeInlineStyle('min-'+removeSize);
                     section1.removeInlineStyle('max-'+removeSize);
                     section1.removeInlineStyle(removeSize);
@@ -144,16 +143,18 @@ module.exports = function (window) {
                     // now use, the true width of section1 to set the offset of section2:
                     // in case `divider` is set in pixels, we can use it straight ahead
                     // in all other cases we need to calculate the width --> CAUTIOUS: this might be set with transition!
-console.warn('isDragging: '+isDragging);
-console.warn('model.divider: '+model.divider);
                     if (!isDragging && !model.divider.endsWith('px')) {
                         section1HiddenCopy.setHTML(section1.getHTML(null, true), true);
                         value = section1HiddenCopy[size];
-console.warn('sync --> size through hidden-copy: '+value);
+                        section1.setInlineStyle(size, value+'px', null, true).finally(function() {
+                            section1.setClass('suppress-trans');
+                            section1.setInlineStyle(size, model.divider);
+                            section1.removeClass('suppress-trans');
+                        });
                     }
                     else {
+                        section1.setInlineStyle(size, model.divider);
                         value = parseInt(model.divider, 10);
-console.warn('sync --> size direct: '+value);
                     }
                     // value = sectionSize + divider[size];
                     section2.setInlineStyles([
