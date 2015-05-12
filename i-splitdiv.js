@@ -76,13 +76,11 @@ module.exports = function (window) {
                 var element = this,
                     designNode = element.getItagContainer(),
                     sections = designNode.getAll('>section'),
-                    container = element.append('<div></div>'),
-                    nodeContent;
+                    container = element.append('<div></div>');
                 if (sections[0]) {
                     sections[0].setAttr('section', 'first', true);
-                    nodeContent = sections[0].getOuterHTML(null, true);
-                    element.setData('_section1', container.append('<div>'+nodeContent+'</div>'));
-                    element.setData('_section1HiddenCopy', container.addSystemElement('<div class="hidden-copy suppress-trans">'+nodeContent+'</div>'));
+                    element.setData('_section1', container.append('<div>'+sections[0].getOuterHTML(null, true)+'</div>'));
+                    element.setData('_section1HiddenCopy', container.addSystemElement('<div class="hidden-copy suppress-trans"></div>'));
                 }
                 if (sections[1]) {
                     sections[1].setAttr('section', 'second', true);
@@ -144,28 +142,40 @@ module.exports = function (window) {
                     // in case `divider` is set in pixels, we can use it straight ahead
                     // in all other cases we need to calculate the width --> CAUTIOUS: this might be set with transition!
                     if (!isDragging && !model.divider.endsWith('px')) {
-                        section1HiddenCopy.setHTML(section1.getHTML(null, true), true);
-                        value = section1HiddenCopy[size];
-                        section1.setInlineStyle(size, value+'px', null, true).finally(function() {
-                            section1.setClass('suppress-trans');
-                            section1.setInlineStyle(size, model.divider);
-                            section1.removeClass('suppress-trans');
+                        // we need to go async --> section1 might have itags that need rendering
+                        ITSA.async(function() {
+                            section1HiddenCopy.setHTML(section1.getHTML(null, true), true);
+                            value = section1HiddenCopy[size];
+                            section1.setInlineStyle(size, value+'px', null, true).finally(function() {
+                                section1.setClass('suppress-trans');
+                                section1.setInlineStyle(size, model.divider);
+                                section1.removeClass('suppress-trans');
+                            });
+                            section2.setInlineStyles([
+                                {property: 'margin-'+indent, value: -value+'px'},
+                                {property: 'padding-'+indent, value: value+'px'}
+                            ]);
+                            section2.removeInlineStyle('margin-'+removeIndent);
+                            section2.removeInlineStyle('padding-'+removeIndent);
+                            if (!isDragging) {
+                                divider.setInlineStyle(indent, (value-(divider[size]/2))+'px');
+                                divider.removeInlineStyle(removeIndent);
+                            }
                         });
                     }
                     else {
                         section1.setInlineStyle(size, model.divider);
                         value = parseInt(model.divider, 10);
-                    }
-                    // value = sectionSize + divider[size];
-                    section2.setInlineStyles([
-                        {property: 'margin-'+indent, value: -value+'px'},
-                        {property: 'padding-'+indent, value: value+'px'}
-                    ]);
-                    section2.removeInlineStyle('margin-'+removeIndent);
-                    section2.removeInlineStyle('padding-'+removeIndent);
-                    if (!isDragging) {
-                        divider.setInlineStyle(indent, (value-(divider[size]/2))+'px');
-                        divider.removeInlineStyle(removeIndent);
+                        section2.setInlineStyles([
+                            {property: 'margin-'+indent, value: -value+'px'},
+                            {property: 'padding-'+indent, value: value+'px'}
+                        ]);
+                        section2.removeInlineStyle('margin-'+removeIndent);
+                        section2.removeInlineStyle('padding-'+removeIndent);
+                        if (!isDragging) {
+                            divider.setInlineStyle(indent, (value-(divider[size]/2))+'px');
+                            divider.removeInlineStyle(removeIndent);
+                        }
                     }
 
 
