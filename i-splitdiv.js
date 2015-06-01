@@ -12,56 +12,33 @@ module.exports = function (window) {
 
     if (!window.ITAGS[itagName]) {
 
-        Event.after('dd', function(e) {
-            // start dragging
-            var node = e.target,
-                isplitdiv = node.inside('i-splitdiv'),
-                dragPromise = e.dd;
-            isplitdiv.setData('_dragging', true);
-            isplitdiv.setClass('i-resizing');
-            dragPromise.finally(function() {
-                isplitdiv.removeData('_dragging');
-                isplitdiv.removeClass('i-resizing');
+        Event.after('mousedown', function(e) {
+            var element = e.target.inside('i-splitdiv'),
+                section1 = element.getData('_section1'),
+                model = element.model,
+                horizontal = model.horizontal,
+                size = horizontal ? 'width' : 'height',
+                maxSize = element[size] - (parseInt(element.getStyle('border-left-'+size), 10) || null) - (parseInt(element.getStyle('border-right-'+size), 10) || 0),
+                startPos, initialSize, moveListener;
+            element.setClass('i-resizing');
+            startPos = horizontal ? e.clientX : e.clientY;
+            initialSize = section1[size];
+            moveListener = Event.after('mousemove', function(e2) {
+                var newPos = horizontal ? e2.clientX : e2.clientY,
+                    difference = newPos - startPos,
+                    newSize = Math.inbetween(0, initialSize + difference, maxSize);
+                model.divider = newSize+'px';
             });
-        }, 'i-splitdiv .resize-handle');
 
-        Event.before('dd-drag', function(e) {
-            var node = e.target,
-                isplitdiv = node.inside('i-splitdiv'),
-                // divider = isplitdiv.getData('_divider'),
-                model = isplitdiv.model,
-                horizontal = model.horizontal,
-                dimension = horizontal ? 'width' : 'height',
-                start = horizontal ? 'left' : 'top',
-                end = horizontal ? 'right' : 'bottom',
-                borderStart = parseInt(isplitdiv.getStyle('border-'+start+'-'+dimension) || 0, 10),
-                borderEnd = parseInt(isplitdiv.getStyle('border-'+end+'-'+dimension) || 0, 10),
-                extra = isplitdiv[start] + borderStart,
-                min = (model['divider-min'] || 0),
-                max = (model['divider-max'] || isplitdiv[dimension]),
-                maxSize = isplitdiv[dimension] - borderStart - borderEnd;
-            min = Math.max(0, min);
-            max = Math.min(maxSize, max);
-            min += extra;
-            max += extra;
-            if ((e[(horizontal ? 'x' : 'y')+'Mouse']<min) || (e[(horizontal ? 'x' : 'y')+'Mouse']>max)) {
-                e.preventDefault();
-            }
-        }, 'i-splitdiv .resize-handle');
-
-        Event.after('dd-drag', function(e) {
-            var node = e.target,
-                isplitdiv = node.inside('i-splitdiv'),
-                divider = isplitdiv.getData('_divider'),
-                model = isplitdiv.model,
-                horizontal = model.horizontal,
-                dimension = horizontal ? 'width' : 'height',
-                start = horizontal ? 'left' : 'top',
-                halfSplitSize = Math.round(divider[dimension]/2),
-                borderStart = parseInt(isplitdiv.getStyle('border-'+start+'-'+dimension) || 0, 10);
-            model.divider = (divider[start]-isplitdiv[start]-borderStart+halfSplitSize) +'px';
-
-        }, 'i-splitdiv .resize-handle');
+            Event.onceAfter('mouseup', function(e3) {
+                var newPos = horizontal ? e3.clientX : e3.clientY,
+                    difference = newPos - startPos,
+                    newSize = Math.inbetween(0, initialSize + difference, maxSize);
+                moveListener.detach();
+                element.removeClass('i-resizing');
+                model.divider = newSize+'px';
+            });
+        }, 'i-splitdiv[resizable="true"] .resize-handle');
 
         Itag = DOCUMENT.defineItag(itagName, {
             attrs: {
@@ -79,120 +56,55 @@ module.exports = function (window) {
                     container = element.append('<div></div>');
                 if (sections[0]) {
                     sections[0].setAttr('section', 'first', true);
-                    element.setData('_section1', container.append('<div>'+sections[0].getOuterHTML(null, true)+'</div>'));
-                    element.setData('_section1HiddenCopy', container.addSystemElement('<div class="hidden-copy suppress-trans"></div>'));
+                    element.setData('_section1', container.append('<div section="first">'+sections[0].getOuterHTML(null, true)+'</div>'));
+                     // add the divider:
+                    element.setData('_divider', container.addSystemElement('<div class="resize-handle"></div>'));
                 }
                 if (sections[1]) {
                     sections[1].setAttr('section', 'second', true);
-                    element.setData('_section2', container.append('<div>'+sections[1].getOuterHTML(null, true)+'</div>'));
+                    element.setData('_section2', container.append('<div section="second">'+sections[1].getOuterHTML(null, true)+'</div>'));
                 }
-                 // add the divider, but not silently --> we need to enable the dd-plugin to render:
-                element.setData('_divider', container.addSystemElement('<div class="resize-handle" plugin-constrain="true" constrain-selector="i-splitdiv"></div>', false, false));
             },
 
             sync: function() {
                 var element = this,
                     model = element.model,
                     section1 = element.getData('_section1'),
-                    section1HiddenCopy = element.getData('_section1HiddenCopy'),
                     section2 = element.getData('_section2'),
                     dividerNode = element.getData('_divider'),
                     divider = model.divider,
-                    size, indent, removeSize, removeIndent, value, isDragging, prevDivider, reversed;
+                    size, removeSize, value, indent;
                 if (section1 && section2) {
-                    isDragging = element.getData('_dragging');
-                    prevDivider = element.getData('_prevDivider') || divider;
                     if (model.horizontal) {
                         size = 'width';
-                        indent = 'left';
                         removeSize = 'height';
-                        removeIndent = 'top';
+                        indent = 'left';
                     }
                     else {
                         size = 'height';
-                        indent = 'top';
                         removeSize = 'width';
-                        removeIndent = 'left';
+                        indent = 'top';
                     }
-                    dividerNode[model.resizable ? 'plug' : 'unplug']('dd');
                     value = model['dividerNode-min'];
                     if (value) {
                         section1.setInlineStyle('min-'+size, value);
-                        section1HiddenCopy.setInlineStyle('min-'+size, value);
                     }
                     else {
                         section1.removeInlineStyle('min-'+size);
-                        section1HiddenCopy.removeInlineStyle('min-'+size);
                     }
                     value = model['dividerNode-max'];
                     if (value) {
                         section1.setInlineStyle('max-'+size, value);
-                        section1HiddenCopy.setInlineStyle('max-'+size, value);
                     }
                     else {
                         section1.removeInlineStyle('max-'+size);
-                        section1HiddenCopy.removeInlineStyle('max-'+size);
                     }
                     section1.removeInlineStyle('min-'+removeSize);
                     section1.removeInlineStyle('max-'+removeSize);
                     section1.removeInlineStyle(removeSize);
-                    section1HiddenCopy.setInlineStyle(size, divider);
-                    section1HiddenCopy.removeInlineStyle('min-'+removeSize);
-                    section1HiddenCopy.removeInlineStyle('max-'+removeSize);
-                    section1HiddenCopy.removeInlineStyle(removeSize);
-                    // now use, the true width of section1 to set the offset of section2:
-                    // in case `dividerNode` is set in pixels, we can use it straight ahead
-                    // in all other cases we need to calculate the width --> CAUTIOUS: this might be set with transition!
-                    if (!isDragging && !divider.endsWith('px')) {
-                        // we need to go async --> section1 might have itags that need rendering
-                        ITSA.async(function() {
-                            section1HiddenCopy.setHTML(section1.getHTML(null, true), true);
-                            value = section1HiddenCopy[size];
-                            reversed = (value>=prevDivider);
-                            if (reversed) {
-                                section2.setInlineStyles([
-                                    {property: 'margin-'+indent, value: -value+'px'},
-                                    {property: 'padding-'+indent, value: value+'px'}
-                                ]);
-                            }
-                            section1.setInlineStyle(size, value+'px', null, true).finally(function() {
-                                section1.setClass('suppress-trans');
-                                section1.setInlineStyle(size, divider);
-                                section1.removeClass('suppress-trans');
-                            });
-                            if (!reversed) {
-                                section2.setInlineStyles([
-                                    {property: 'margin-'+indent, value: -value+'px'},
-                                    {property: 'padding-'+indent, value: value+'px'}
-                                ]);
-                            }
-                            section2.removeInlineStyle('margin-'+removeIndent);
-                            section2.removeInlineStyle('padding-'+removeIndent);
-                            if (!isDragging) {
-                                dividerNode.setInlineStyle(indent, (value-(dividerNode[size]/2))+'px');
-                                dividerNode.removeInlineStyle(removeIndent);
-                            }
-                            element.setData('_prevDivider', value);
-                        });
-                    }
-                    else {
-                        value = parseInt(divider, 10);
-                        // in case of expanding: first make right area smaller
-                        reversed = (value>=prevDivider);
-                        reversed || section1.setInlineStyle(size, divider);
-                        section2.setInlineStyles([
-                            {property: 'margin-'+indent, value: -value+'px'},
-                            {property: 'padding-'+indent, value: value+'px'}
-                        ]);
-                        reversed && section1.setInlineStyle(size, divider);
-                        section2.removeInlineStyle('margin-'+removeIndent);
-                        section2.removeInlineStyle('padding-'+removeIndent);
-                        if (!isDragging) {
-                            dividerNode.setInlineStyle(indent, (value-(dividerNode[size]/2))+'px');
-                            dividerNode.removeInlineStyle(removeIndent);
-                        }
-                        element.setData('_prevDivider', value);
-                    }
+                    value = divider;
+                    section1.setInlineStyle(size, value);
+                    dividerNode.setInlineStyle(indent, (section1[size] - Math.round((dividerNode[size])/2))+'px');
                 }
             },
 

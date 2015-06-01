@@ -30,6 +30,11 @@ i-splitdiv:not(.itag-rendered) * {
 }
 /* ================================= */
 
+/* *******************************************************************
+/* NOTE: splitdivs can be nested!
+ * Therefore, we need exaclty define the childposition of the css!
+ *********************************************************************/
+
 i-splitdiv {
     margin: 0;
     -webkit-box-sizing: border-box;
@@ -58,14 +63,63 @@ i-splitdiv {
     -ms-flex-flow: row wrap;
 }
 
+/* container */
 i-splitdiv >div {
     position: relative;
+    left: 0;
+    top: 0;
     overflow: hidden;
     width: 100%;
     height: 100%;
+    /* is a flexbox */
+    display: -ms-flex;
+    display: -webkit-flex;
+    display: flex;
+    -ms-flex-direction: column;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -ms-align-items: center;
+    -webkit-align-items: center;
+    align-items: center;
+    -ms-align-content: stretch;
+    -webkit-align-content: stretch;
+    align-content: stretch;
 }
 
-i-splitdiv >div >div {
+i-splitdiv[horizontal="true"] >div {
+    -ms-flex-direction: row;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+}
+
+i-splitdiv >div >div[section] {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    align-self: stretch;
+    -ms-align-self: stretch;
+    -webkit-align-self: stretch;
+    display: block;
+    overflow: hidden; /* needed to make decrease to low values posible when section has padding */
+    /* is a flexbox by itself */
+    display: -ms-flex;
+    display: -webkit-flex;
+    display: flex;
+    -ms-flex-direction: column;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -ms-align-items: center;
+    -webkit-align-items: center;
+    align-items: center;
+    -ms-align-content: stretch;
+    -webkit-align-content: stretch;
+    align-content: stretch;
+    flex-shrink: 0;
+    -ms-flex-shrink: 0;
+    -webkit-flex-shrink: 0;
+}
+
+i-splitdiv >div >div[section] >section {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -73,42 +127,73 @@ i-splitdiv >div >div {
     word-spacing: normal;
     vertical-align: top;
     text-rendering: auto;
-    width: 100%;
-    height: 100%;
-    display: block;
-    position: relative;
-    z-index: 2;
-    overflow: hidden; /* needed to make decrease to low values posible when section has padding */
-}
-
-i-splitdiv.itag-rendered:not(.i-resizing) >div >div:not(.suppress-trans) {
-    -moz-transition: width 0.5s, margin-left 0.5s, padding-left 0.5s, height 0.5s, margin-top 0.5s, padding-top 0.5s;
-    -o-transition: width 0.5s, margin-left 0.5s, padding-left 0.5s, height 0.5s, margin-top 0.5s, padding-top 0.5s;
-    -webkit-transition: width 0.5s, margin-left 0.5s, padding-left 0.5s, height 0.5s, margin-top 0.5s, padding-top 0.5s;
-    transition: width 0.5s, margin-left 0.5s, padding-left 0.5s, height 0.5s, margin-top 0.5s, padding-top 0.5s;
-}
-
-i-splitdiv >div >div.hidden-copy {
-    position: absolute !important;
-    z-index: -1 !important;
-    opacity: 0 !important;
-}
-
-i-splitdiv >div >div >section {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
+    align-self: stretch;
+    -ms-align-self: stretch;
+    -webkit-align-self: stretch;
+    flex-grow: 1;
+    -ms-flex-grow: 1;
+    -webkit-flex-grow: 1;
+    /* overflow: hidden; /* needed to make decrease to low values posible when section has padding */
     overflow: scroll;
 }
 
-i-splitdiv >div >div:last-child {
-    z-index: 1;
+i-splitdiv.itag-rendered:not(.i-resizing) >div >div[section="first"]:not(.suppress-trans) {
+    -moz-transition: width 0.5s, height 0.5s;
+    -o-transition: width 0.5s, height 0.5s;
+    -webkit-transition: width 0.5s, height 0.5s;
+    transition: width 0.5s, height 0.5s;
 }
 
-i-splitdiv[horizontal="true"] >div >div {
-    display: inline-block;
+i-splitdiv >div >div[section="second"] {
+    flex-grow: 1;
+    -ms-flex-grow: 1;
+    -webkit-flex-grow: 1;
+}
+
+i-splitdiv[resizable="true"].resize-dashed >div >div[section="first"] {
+    border-bottom: dashed 2px #666;
+}
+
+i-splitdiv[resizable="true"].resize-dashed >div >div[section="second"] {
+    border-top: dashed 2px #666;
+}
+
+i-splitdiv[resizable="true"].resize-dotted >div >div[section="first"] {
+    border-bottom: dotted 2px #666;
+}
+
+i-splitdiv[resizable="true"].resize-dotted >div >div[section="second"] {
+    border-top: dotted 2px #666;
+}
+
+i-splitdiv[resizable="true"][horizontal="true"].resize-dashed >div >div[section="first"] {
+    border-right: dashed 2px #666;
+    border-bottom: none;
+}
+
+i-splitdiv[resizable="true"][horizontal="true"].resize-dashed >div >div[section="second"] {
+    border-left: dashed 2px #666;
+    border-top: none;
+}
+
+i-splitdiv[resizable="true"][horizontal="true"].resize-dotted >div >div[section="first"] {
+    border-right: dotted 2px #666;
+    border-bottom: none;
+}
+
+i-splitdiv[resizable="true"][horizontal="true"].resize-dotted >div >div[section="second"] {
+    border-left: dotted 2px #666;
+    border-top: none;
+}
+
+i-splitdiv[resizable="true"].resize-light >div >div[section="first"] {
+    border-right-color: #EEE;
+    border-bottom-color: #EEE;
+}
+
+i-splitdiv[resizable="true"].resize-light >div >div[section="second"] {
+    border-left-color: #EEE;
+    border-top-color: #EEE;
 }
 
 i-splitdiv .resize-handle {
@@ -116,26 +201,31 @@ i-splitdiv .resize-handle {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     position: absolute;
-    z-index: -1;
+    z-index: 999;
     width: 100%;
     height: 16px;
+    bottom: 8px;
+    left: 0;
+    display: none;
 }
 
-i-splitdiv .resize-handle[plugin-dd="true"] {
-    z-index: 3;
+i-splitdiv[resizable="true"] >div >div.resize-handle {
+    display: block;
 }
 
 i-splitdiv.i-resizing,
-i-splitdiv .resize-handle[plugin-dd="true"]:hover {
+i-splitdiv >div >div.resize-handle:hover {
     cursor: row-resize;
 }
 
 i-splitdiv[horizontal="true"].i-resizing,
-i-splitdiv[horizontal="true"] .resize-handle[plugin-dd="true"]:hover {
+i-splitdiv[horizontal="true"] >div >div.resize-handle:hover {
     cursor: col-resize;
 }
 
-i-splitdiv[horizontal="true"] .resize-handle {
+i-splitdiv[horizontal="true"] >div >div.resize-handle {
     width: 16px;
     height: 100%;
+    bottom: 0;
+    right: 8;
 }
