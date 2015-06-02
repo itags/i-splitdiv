@@ -148,6 +148,9 @@ i-splitdiv >div >div[section="second"] {
     flex-grow: 1;
     -ms-flex-grow: 1;
     -webkit-flex-grow: 1;
+    flex-shrink: 1;
+    -ms-flex-shrink: 1;
+    -webkit-flex-shrink: 1;
 }
 
 i-splitdiv[resizable="true"].resize-dashed >div >div[section="first"] {
@@ -196,7 +199,7 @@ i-splitdiv[resizable="true"].resize-light >div >div[section="second"] {
     border-top-color: #EEE;
 }
 
-i-splitdiv .resize-handle {
+i-splitdiv >div >div.resize-handle {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -205,11 +208,10 @@ i-splitdiv .resize-handle {
     width: 100%;
     height: 16px;
     bottom: 8px;
-    left: 0;
     display: none;
 }
 
-i-splitdiv[resizable="true"] >div >div.resize-handle {
+i-splitdiv[resizable="true"] >div >div.resize-handle.first {
     display: block;
 }
 
@@ -226,6 +228,32 @@ i-splitdiv[horizontal="true"] >div >div.resize-handle:hover {
 i-splitdiv[horizontal="true"] >div >div.resize-handle {
     width: 16px;
     height: 100%;
-    bottom: 0;
-    right: 8;
+    bottom: inherit;
+    right: 8px;
+}
+
+/* in case `full-page` is set, then the parentNode gets the class: `.i-splitdiv-stretch-child`: */
+html.i-splitdiv-full-page {
+    height: 100% !important;
+}
+html.i-splitdiv-full-page body {
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 100% !important;
+    display: -ms-flex !important;
+    display: -webkit-flex !important;
+    display: flex !important;
+    -ms-align-items: stretch !important;
+    -webkit-align-items: stretch !important;
+    align-items: stretch !important;
+}
+
+i-splitdiv[full-page="true"] {
+    height: 100% !important;
+    flex-grow: 1;
+    -ms-flex-grow: 1;
+    -webkit-flex-grow: 1;
+    flex-shrink: 1;
+    -ms-flex-shrink: 1;
+    -webkit-flex-shrink: 1;
 }
