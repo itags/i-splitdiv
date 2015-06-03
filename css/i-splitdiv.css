@@ -64,7 +64,7 @@ i-splitdiv {
 }
 
 /* container */
-i-splitdiv >div {
+i-splitdiv >section {
     position: relative;
     left: 0;
     top: 0;
@@ -86,13 +86,13 @@ i-splitdiv >div {
     align-content: stretch;
 }
 
-i-splitdiv[horizontal="true"] >div {
+i-splitdiv[horizontal="true"] >section {
     -ms-flex-direction: row;
     -webkit-flex-direction: row;
     flex-direction: row;
 }
 
-i-splitdiv >div >div[section] {
+i-splitdiv >section >section[container] {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -119,7 +119,7 @@ i-splitdiv >div >div[section] {
     -webkit-flex-shrink: 0;
 }
 
-i-splitdiv >div >div[section] >section {
+i-splitdiv >section >section[container] >section {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -127,24 +127,34 @@ i-splitdiv >div >div[section] >section {
     word-spacing: normal;
     vertical-align: top;
     text-rendering: auto;
-    align-self: stretch;
-    -ms-align-self: stretch;
-    -webkit-align-self: stretch;
+    align-self: inherit;
+    -ms-align-self: inherit;
+    -webkit-align-self: inherit;
     flex-grow: 1;
     -ms-flex-grow: 1;
     -webkit-flex-grow: 1;
     /* overflow: hidden; /* needed to make decrease to low values posible when section has padding */
     overflow: scroll;
+    position: relative; /* make floating items keep inside the section */
+    /* is a flexbox by itself, but we don't pre-specify alignment */
+    display: -ms-flex;
+    display: -webkit-flex;
+    display: flex;
+    -ms-flex-direction: column;
+    -webkit-flex-direction: column;
+    flex-direction: column;
 }
 
-i-splitdiv.itag-rendered:not(.i-resizing) >div >div[section="first"]:not(.suppress-trans) {
-    -moz-transition: width 0.5s, height 0.5s;
-    -o-transition: width 0.5s, height 0.5s;
-    -webkit-transition: width 0.5s, height 0.5s;
-    transition: width 0.5s, height 0.5s;
+i-splitdiv[horizontal="true"] >section >section[container] >section {
+    -ms-flex-direction: row;
+    -webkit-flex-direction: row;
+    flex-direction: row;
 }
 
-i-splitdiv >div >div[section="second"] {
+i-splitdiv >section >section[container] >section >* {
+    align-self: flex-start;
+    -ms-align-self: flex-start;
+    -webkit-align-self: flex-start;
     flex-grow: 1;
     -ms-flex-grow: 1;
     -webkit-flex-grow: 1;
@@ -153,53 +163,69 @@ i-splitdiv >div >div[section="second"] {
     -webkit-flex-shrink: 1;
 }
 
-i-splitdiv[resizable="true"].resize-dashed >div >div[section="first"] {
+i-splitdiv.itag-rendered:not(.i-resizing) >section >section[container="first"]:not(.suppress-trans) {
+    -moz-transition: width 0.5s, height 0.5s;
+    -o-transition: width 0.5s, height 0.5s;
+    -webkit-transition: width 0.5s, height 0.5s;
+    transition: width 0.5s, height 0.5s;
+}
+
+i-splitdiv >section >section[container="second"] {
+    flex-grow: 1;
+    -ms-flex-grow: 1;
+    -webkit-flex-grow: 1;
+    flex-shrink: 1;
+    -ms-flex-shrink: 1;
+    -webkit-flex-shrink: 1;
+}
+
+i-splitdiv[resizable="true"].resize-dashed >section >section[container="first"] {
     border-bottom: dashed 2px #666;
 }
 
-i-splitdiv[resizable="true"].resize-dashed >div >div[section="second"] {
+i-splitdiv[resizable="true"].resize-dashed >section >section[container="second"] {
     border-top: dashed 2px #666;
 }
 
-i-splitdiv[resizable="true"].resize-dotted >div >div[section="first"] {
+i-splitdiv[resizable="true"].resize-dotted >section >section[container="first"] {
     border-bottom: dotted 2px #666;
 }
 
-i-splitdiv[resizable="true"].resize-dotted >div >div[section="second"] {
+i-splitdiv[resizable="true"].resize-dotted >section >section[container="second"] {
     border-top: dotted 2px #666;
 }
 
-i-splitdiv[resizable="true"][horizontal="true"].resize-dashed >div >div[section="first"] {
+i-splitdiv[resizable="true"][horizontal="true"].resize-dashed >section >section[container="first"] {
     border-right: dashed 2px #666;
     border-bottom: none;
 }
 
-i-splitdiv[resizable="true"][horizontal="true"].resize-dashed >div >div[section="second"] {
+i-splitdiv[resizable="true"][horizontal="true"].resize-dashed >section >section[container="second"] {
     border-left: dashed 2px #666;
     border-top: none;
 }
 
-i-splitdiv[resizable="true"][horizontal="true"].resize-dotted >div >div[section="first"] {
+i-splitdiv[resizable="true"][horizontal="true"].resize-dotted >section >section[container="first"] {
     border-right: dotted 2px #666;
     border-bottom: none;
 }
 
-i-splitdiv[resizable="true"][horizontal="true"].resize-dotted >div >div[section="second"] {
+i-splitdiv[resizable="true"][horizontal="true"].resize-dotted >section >section[container="second"] {
     border-left: dotted 2px #666;
     border-top: none;
 }
 
-i-splitdiv[resizable="true"].resize-light >div >div[section="first"] {
+i-splitdiv[resizable="true"].resize-light >section >section[container="first"] {
     border-right-color: #EEE;
     border-bottom-color: #EEE;
 }
 
-i-splitdiv[resizable="true"].resize-light >div >div[section="second"] {
+i-splitdiv[resizable="true"].resize-light >section >section[container="second"] {
     border-left-color: #EEE;
     border-top-color: #EEE;
 }
 
-i-splitdiv >div >div.resize-handle {
+i-splitdiv >section >section.resize-handle {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -211,21 +237,21 @@ i-splitdiv >div >div.resize-handle {
     display: none;
 }
 
-i-splitdiv[resizable="true"] >div >div.resize-handle.first {
+i-splitdiv[resizable="true"] >section >section.resize-handle.first {
     display: block;
 }
 
 i-splitdiv.i-resizing,
-i-splitdiv >div >div.resize-handle:hover {
+i-splitdiv >section >section.resize-handle:hover {
     cursor: row-resize;
 }
 
 i-splitdiv[horizontal="true"].i-resizing,
-i-splitdiv[horizontal="true"] >div >div.resize-handle:hover {
+i-splitdiv[horizontal="true"] >section >section.resize-handle:hover {
     cursor: col-resize;
 }
 
-i-splitdiv[horizontal="true"] >div >div.resize-handle {
+i-splitdiv[horizontal="true"] >section >section.resize-handle {
     width: 16px;
     height: 100%;
     bottom: inherit;

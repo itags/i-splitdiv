@@ -7,6 +7,7 @@ module.exports = function (window) {
         itagName = 'i-splitdiv', // <-- define your own itag-name here
         DOCUMENT = window.document,
         documentElement = DOCUMENT.documentElement,
+        bodyElement = DOCUMENT.body,
         ITSA = window.ITSA,
         Event = ITSA.Event,
         DIVIDER = 'divider',
@@ -52,7 +53,7 @@ module.exports = function (window) {
                 element.removeClass('i-resizing');
                 model[modelDivider] = newSize+'px';
             });
-        }, 'i-splitdiv >div >div.resize-handle');
+        }, 'i-splitdiv >section >section.resize-handle');
 
         Itag = DOCUMENT.defineItag(itagName, {
             attrs: {
@@ -68,21 +69,25 @@ module.exports = function (window) {
                 var element = this,
                     designNode = element.getItagContainer(),
                     sections = designNode.getAll('>section'),
-                    container = element.append('<div></div>'),
+                    container = element.append('<section></section>'),
                     divider, node;
                 if (sections[0]) {
                     sections[0].setAttr('section', 'first', true);
-                    element.setData('_section1', container.append('<div section="first">'+sections[0].getOuterHTML(null, true)+'</div>'));
+                    element.setData('_section1', container.append('<section container="first">'+sections[0].getOuterHTML(null, true)+'</section>'));
                      // add the divider:
-                    divider = container.addSystemElement('<div class="resize-handle first"></div>');
+                    divider = container.addSystemElement('<section class="resize-handle first"></section>');
                     divider.setData('_section', 1);
                     element.setData('_divider1', divider);
                 }
                 if (sections[1]) {
                     sections[1].setAttr('section', 'second', true);
-                    node = container.append('<div section="second">'+sections[1].getOuterHTML(null, true)+'</div>');
+                    node = container.append('<section container="second">'+sections[1].getOuterHTML(null, true)+'</section>');
                     element.setData('_section2', node);
                     divider && divider.setData('_borderNode', node);
+                }
+                if (element.model['full-page']) {
+                    documentElement.setClass('i-splitdiv-full-page');
+                    bodyElement.setClass('i-splitdiv-full-page');
                 }
             },
 
@@ -127,12 +132,14 @@ module.exports = function (window) {
                     value = divider;
                     resizeSection.setInlineStyle(size, value);
                     dividerNode.setInlineStyle(indent, (resizeSection[size] - Math.round(dividerNode[size]/2))+'px');
-                    documentElement.toggleClass('i-splitdiv-full-page', model['full-page']);
                 }
             },
 
             destroy: function() {
-                documentElement.removeClass('i-splitdiv-full-page');
+                if (this.model['full-page']) {
+                    documentElement.removeClass('i-splitdiv-full-page');
+                    bodyElement.removeClass('i-splitdiv-full-page');
+                }
             }
         });
 
