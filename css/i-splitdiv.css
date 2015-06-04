@@ -136,31 +136,6 @@ i-splitdiv >section >section[container] >section {
     /* overflow: hidden; /* needed to make decrease to low values posible when section has padding */
     overflow: scroll;
     position: relative; /* make floating items keep inside the section */
-    /* is a flexbox by itself, but we don't pre-specify alignment */
-    display: -ms-flex;
-    display: -webkit-flex;
-    display: flex;
-    -ms-flex-direction: column;
-    -webkit-flex-direction: column;
-    flex-direction: column;
-}
-
-i-splitdiv[horizontal="true"] >section >section[container] >section {
-    -ms-flex-direction: row;
-    -webkit-flex-direction: row;
-    flex-direction: row;
-}
-
-i-splitdiv >section >section[container] >section >* {
-    align-self: flex-start;
-    -ms-align-self: flex-start;
-    -webkit-align-self: flex-start;
-    flex-grow: 1;
-    -ms-flex-grow: 1;
-    -webkit-flex-grow: 1;
-    flex-shrink: 1;
-    -ms-flex-shrink: 1;
-    -webkit-flex-shrink: 1;
 }
 
 i-splitdiv.itag-rendered:not(.i-resizing) >section >section[container="first"]:not(.suppress-trans) {
@@ -179,50 +154,43 @@ i-splitdiv >section >section[container="second"] {
     -webkit-flex-shrink: 1;
 }
 
-i-splitdiv[resizable="true"].resize-dashed >section >section[container="first"] {
-    border-bottom: dashed 2px #666;
-}
-
-i-splitdiv[resizable="true"].resize-dashed >section >section[container="second"] {
-    border-top: dashed 2px #666;
-}
-
+i-splitdiv[resizable="true"].resize-dashed >section >section[container="first"],
 i-splitdiv[resizable="true"].resize-dotted >section >section[container="first"] {
-    border-bottom: dotted 2px #666;
+    border-bottom-width: 2px;
 }
 
+i-splitdiv[resizable="true"].resize-dashed >section >section[container="second"],
 i-splitdiv[resizable="true"].resize-dotted >section >section[container="second"] {
-    border-top: dotted 2px #666;
+    border-top-width: 2px;
 }
 
-i-splitdiv[resizable="true"][horizontal="true"].resize-dashed >section >section[container="first"] {
-    border-right: dashed 2px #666;
-    border-bottom: none;
-}
-
-i-splitdiv[resizable="true"][horizontal="true"].resize-dashed >section >section[container="second"] {
-    border-left: dashed 2px #666;
-    border-top: none;
-}
-
+i-splitdiv[resizable="true"][horizontal="true"].resize-dashed >section >section[container="first"],
 i-splitdiv[resizable="true"][horizontal="true"].resize-dotted >section >section[container="first"] {
-    border-right: dotted 2px #666;
+    border-right-width: 2px;
     border-bottom: none;
 }
 
+i-splitdiv[resizable="true"][horizontal="true"].resize-dashed >section >section[container="second"],
 i-splitdiv[resizable="true"][horizontal="true"].resize-dotted >section >section[container="second"] {
-    border-left: dotted 2px #666;
+    border-left-width: 2px;
     border-top: none;
 }
 
-i-splitdiv[resizable="true"].resize-light >section >section[container="first"] {
-    border-right-color: #EEE;
-    border-bottom-color: #EEE;
+i-splitdiv[resizable="true"].resize-dotted >section >section[container] {
+    border-style: dotted;
 }
 
-i-splitdiv[resizable="true"].resize-light >section >section[container="second"] {
-    border-left-color: #EEE;
-    border-top-color: #EEE;
+i-splitdiv[resizable="true"].resize-dashed >section >section[container] {
+    border-style: dashed;
+}
+
+i-splitdiv[resizable="true"] >section >section[container] {
+    border-width: 0;
+    border-color: #666;
+}
+
+i-splitdiv[resizable="true"].resize-light >section >section[container] {
+    border-color: #EEE;
 }
 
 i-splitdiv >section >section.resize-handle {
@@ -234,7 +202,17 @@ i-splitdiv >section >section.resize-handle {
     width: 100%;
     height: 16px;
     bottom: 8px;
+    left: 0;
     display: none;
+}
+
+i-splitdiv.i-resizing * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 i-splitdiv[resizable="true"] >section >section.resize-handle.first {
@@ -254,8 +232,10 @@ i-splitdiv[horizontal="true"] >section >section.resize-handle:hover {
 i-splitdiv[horizontal="true"] >section >section.resize-handle {
     width: 16px;
     height: 100%;
-    bottom: inherit;
+    bottom: auto;
     right: 8px;
+    top: 0;
+    left: auto;
 }
 
 /* in case `full-page` is set, then the parentNode gets the class: `.i-splitdiv-stretch-child`: */
