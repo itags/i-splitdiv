@@ -1,0 +1,265 @@
+/* ======================================================================= */
+/* ======================================================================= */
+/* ======================================================================= */
+/* Definition of itag shadow-css is done by defining a `dummy` css-rule    */
+/* for the dummy-element: `itag-css` --> its property (also dummy) `i-tag` */
+/* will define which itag will be css-shadowed                             */
+/* ======================================================================= */
+itag-css {
+    i-tag: i-splitdiv;  /* set the property-value to the proper itag */
+}
+/* ======================================================================= */
+/* ======================================================================= */
+/* ======================================================================= */
+
+
+/* ================================= */
+/* set invisiblity when not rendered */
+/* ================================= */
+i-splitdiv:not(.itag-rendered) {
+    /* don't set visibility to hidden --> you cannot set a focus on those items */
+    opacity: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    z-index: -1;
+}
+
+i-splitdiv:not(.itag-rendered) * {
+    opacity: 0 !important;
+}
+/* ================================= */
+
+/* *******************************************************************
+/* NOTE: splitdivs can be nested!
+ * Therefore, we need exaclty define the childposition of the css!
+ *********************************************************************/
+
+i-splitdiv {
+    margin: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+
+    /* the next css comes from purecss: the class `.pure-g`: */
+    letter-spacing: -0.31em; /* Webkit: collapse white-space between units */
+    *letter-spacing: normal; /* reset IE < 8 */
+    word-spacing: -0.43em; /* collapse white-space between units */
+    text-rendering: optimizespeed; /* Webkit: fixes text-rendering: optimizeLegibility */
+    /*
+    Resets the font family back to the OS/browser's default sans-serif font,
+    this the same font stack that Normalize.css sets for the `body`.
+    */
+    font-family: sans-serif;
+    /*
+    Use flexbox when possible to avoid `letter-spacing` side-effects.
+    NOTE: Firefox (as of 25) does not currently support flex-wrap, so the
+    `-moz-` prefix version is omitted.
+    */
+    display: -webkit-flex;
+    -webkit-flex-flow: row wrap;
+    /* IE10 uses display: flexbox */
+    display: -ms-flexbox;
+    -ms-flex-flow: row wrap;
+}
+
+/* container */
+i-splitdiv >section {
+    position: relative;
+    left: 0;
+    top: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    /* is a flexbox */
+    display: -ms-flex;
+    display: -webkit-flex;
+    display: flex;
+    -ms-flex-direction: column;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -ms-align-items: center;
+    -webkit-align-items: center;
+    align-items: center;
+    -ms-align-content: stretch;
+    -webkit-align-content: stretch;
+    align-content: stretch;
+}
+
+i-splitdiv[horizontal="true"] >section {
+    -ms-flex-direction: row;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+}
+
+i-splitdiv >section >section[container] {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    align-self: stretch;
+    -ms-align-self: stretch;
+    -webkit-align-self: stretch;
+    display: block;
+    overflow: hidden; /* needed to make decrease to low values posible when section has padding */
+    /* is a flexbox by itself */
+    display: -ms-flex;
+    display: -webkit-flex;
+    display: flex;
+    -ms-flex-direction: column;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -ms-align-items: center;
+    -webkit-align-items: center;
+    align-items: center;
+    -ms-align-content: stretch;
+    -webkit-align-content: stretch;
+    align-content: stretch;
+    flex-shrink: 0;
+    -ms-flex-shrink: 0;
+    -webkit-flex-shrink: 0;
+}
+
+i-splitdiv >section >section[container] >section {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    letter-spacing: normal;
+    word-spacing: normal;
+    vertical-align: top;
+    text-rendering: auto;
+    align-self: inherit;
+    -ms-align-self: inherit;
+    -webkit-align-self: inherit;
+    flex-grow: 1;
+    -ms-flex-grow: 1;
+    -webkit-flex-grow: 1;
+    /* overflow: hidden; /* needed to make decrease to low values posible when section has padding */
+    overflow: scroll;
+    position: relative; /* make floating items keep inside the section */
+}
+
+i-splitdiv.itag-rendered:not(.i-resizing) >section >section[container="first"]:not(.suppress-trans) {
+    -moz-transition: width 0.5s, height 0.5s;
+    -o-transition: width 0.5s, height 0.5s;
+    -webkit-transition: width 0.5s, height 0.5s;
+    transition: width 0.5s, height 0.5s;
+}
+
+i-splitdiv >section >section[container="second"] {
+    flex-grow: 1;
+    -ms-flex-grow: 1;
+    -webkit-flex-grow: 1;
+    flex-shrink: 1;
+    -ms-flex-shrink: 1;
+    -webkit-flex-shrink: 1;
+}
+
+i-splitdiv[resizable="true"].resize-dashed >section >section[container="first"],
+i-splitdiv[resizable="true"].resize-dotted >section >section[container="first"] {
+    border-bottom-width: 2px;
+}
+
+i-splitdiv[resizable="true"].resize-dashed >section >section[container="second"],
+i-splitdiv[resizable="true"].resize-dotted >section >section[container="second"] {
+    border-top-width: 2px;
+}
+
+i-splitdiv[resizable="true"][horizontal="true"].resize-dashed >section >section[container="first"],
+i-splitdiv[resizable="true"][horizontal="true"].resize-dotted >section >section[container="first"] {
+    border-right-width: 2px;
+    border-bottom: none;
+}
+
+i-splitdiv[resizable="true"][horizontal="true"].resize-dashed >section >section[container="second"],
+i-splitdiv[resizable="true"][horizontal="true"].resize-dotted >section >section[container="second"] {
+    border-left-width: 2px;
+    border-top: none;
+}
+
+i-splitdiv[resizable="true"].resize-dotted >section >section[container] {
+    border-style: dotted;
+}
+
+i-splitdiv[resizable="true"].resize-dashed >section >section[container] {
+    border-style: dashed;
+}
+
+i-splitdiv[resizable="true"] >section >section[container] {
+    border-width: 0;
+    border-color: #666;
+}
+
+i-splitdiv[resizable="true"].resize-light >section >section[container] {
+    border-color: #EEE;
+}
+
+i-splitdiv >section >section.resize-handle {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    z-index: 999;
+    width: 100%;
+    height: 16px;
+    bottom: 8px;
+    left: 0;
+    display: none;
+}
+
+i-splitdiv.i-resizing * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+i-splitdiv[resizable="true"] >section >section.resize-handle.first {
+    display: block;
+}
+
+i-splitdiv.i-resizing,
+i-splitdiv >section >section.resize-handle:hover {
+    cursor: row-resize;
+}
+
+i-splitdiv[horizontal="true"].i-resizing,
+i-splitdiv[horizontal="true"] >section >section.resize-handle:hover {
+    cursor: col-resize;
+}
+
+i-splitdiv[horizontal="true"] >section >section.resize-handle {
+    width: 16px;
+    height: 100%;
+    bottom: auto;
+    right: 8px;
+    top: 0;
+    left: auto;
+}
+
+/* in case `full-page` is set, then the parentNode gets the class: `.i-splitdiv-stretch-child`: */
+html.i-splitdiv-full-page {
+    height: 100% !important;
+}
+html.i-splitdiv-full-page body {
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 100% !important;
+    display: -ms-flex !important;
+    display: -webkit-flex !important;
+    display: flex !important;
+    -ms-align-items: stretch !important;
+    -webkit-align-items: stretch !important;
+    align-items: stretch !important;
+}
+
+i-splitdiv[full-page="true"] {
+    height: 100% !important;
+    flex-grow: 1;
+    -ms-flex-grow: 1;
+    -webkit-flex-grow: 1;
+    flex-shrink: 1;
+    -ms-flex-shrink: 1;
+    -webkit-flex-shrink: 1;
+}
