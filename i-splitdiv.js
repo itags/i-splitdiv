@@ -27,7 +27,29 @@ module.exports = function (window) {
                 horizontal = model.horizontal,
                 size = horizontal ? 'width' : 'height',
                 maxSize = element['inner'+ (horizontal ? 'Width' : 'Height')] - (parseInt(borderSection.getStyle('border-'+(horizontal ? (reverseResize ? 'right' : 'left') : (reverseResize ? 'bottom' : 'top'))+'-width'), 10) || 0),
-                startPos, initialSize, moveListener;
+                startPos, initialSize, moveListener, setNewSize;
+            setNewSize = function(newSize) {
+                var prevSize = model[modelDivider];
+                if (newSize!==prevSize) {
+                    model[modelDivider] = newSize;
+                    /**
+                    * Emitted when a the i-select changes its value
+                    *
+                    * @event i-select:valuechange
+                    * @param e {Object} eventobject including:
+                    * @param e.target {HtmlElement} the i-select element
+                    * @param e.prevValue {Number} the selected item, starting with 1
+                    * @param e.newValue {Number} the selected item, starting with 1
+                    * @param e.buttonText {String} the text that will appear on the button
+                    * @param e.listText {String} the text as it is in the list
+                    * @since 0.1
+                    */
+                    element.emit('dividerchange', {
+                        prevValue: prevSize,
+                        newValue: newSize
+                    });
+                }
+            };
             if ((modelDivider===DIVIDER+'0') || (modelDivider===DIVIDER+'1')) {
                 modelDivider = DIVIDER;
             }
@@ -39,8 +61,8 @@ module.exports = function (window) {
                     difference = newPos - startPos,
                     newSize;
                 reverseResize && (difference=-difference);
-                newSize = Math.inbetween(0, initialSize + difference, maxSize);
-                model[modelDivider] = newSize+'px';
+                newSize = Math.inbetween(0, initialSize + difference, maxSize) + 'px';
+                setNewSize(newSize);
             });
 
             Event.onceAfter('mouseup', function(e3) {
@@ -48,10 +70,10 @@ module.exports = function (window) {
                     difference = newPos - startPos,
                     newSize;
                 reverseResize && (difference=-difference);
-                newSize = Math.inbetween(0, initialSize + difference, maxSize);
+                newSize = Math.inbetween(0, initialSize + difference, maxSize) + 'px';
                 moveListener.detach();
                 element.removeClass('i-resizing');
-                model[modelDivider] = newSize+'px';
+                setNewSize(newSize);
             });
         }, 'i-splitdiv >section >section.resize-handle');
 
